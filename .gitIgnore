@@ -1,0 +1,21 @@
+.vscode/
+.idea/
+*.iml
+
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+docker/kafka_data/
+docker/postgres_data/
+
+.env
+*.pem
+*.key
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.backup
