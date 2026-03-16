@@ -80,11 +80,15 @@ public class LogConsumer {
         }
     }
 
-    private static void startMetricsServer() {
+private static void startMetricsServer() {
         try {
             HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);
             server.createContext("/metrics", httpExchange -> {
                 String response = prometheusRegistry.scrape();
+                
+                // Tell Prometheus exactly what format the data is in
+                httpExchange.getResponseHeaders().add("Content-Type", "text/plain; version=0.0.4; charset=utf-8");
+                
                 httpExchange.sendResponseHeaders(200, response.getBytes().length);
                 try (OutputStream os = httpExchange.getResponseBody()) {
                     os.write(response.getBytes());
