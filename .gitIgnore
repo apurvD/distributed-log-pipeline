@@ -19,3 +19,4 @@ docker/postgres_data/
 .terraform/
 *.tfstate
 *.tfstate.backup
+log-pipeline-key*
