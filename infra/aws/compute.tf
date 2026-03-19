@@ -28,9 +28,19 @@ resource "aws_instance" "kafka_node" {
   ]
 
   root_block_device {
-    volume_size = 8 # Keeps us under the 30GB Free Tier limit
+    volume_size = 8
     volume_type = "gp3"
   }
+
+  # Install Docker
+  user_data = <<EOF
+  #!/bin/bash
+  apt-get update -y
+  apt-get install -y docker.io docker-compose
+  systemctl start docker
+  systemctl enable docker
+  usermod -aG docker ubuntu
+  EOF
 
   tags = {
     Name = "log-pipeline-kafka"
@@ -54,6 +64,13 @@ resource "aws_instance" "producer_node" {
     volume_type = "gp3"
   }
 
+  # Install Java 18
+  user_data = <<EOF
+  #!/bin/bash
+  apt-get update -y
+  apt-get install -y openjdk-17-jdk
+  EOF
+
   tags = {
     Name = "log-pipeline-producer"
   }
@@ -69,13 +86,23 @@ resource "aws_instance" "consumer_node" {
   vpc_security_group_ids = [
     aws_security_group.base_sg.id,
     aws_security_group.internal_sg.id,
-    aws_security_group.web_sg.id # Needs web access for Grafana
+    aws_security_group.web_sg.id
   ]
 
   root_block_device {
     volume_size = 8
     volume_type = "gp3"
   }
+
+  # Install Docker AND Java 18
+  user_data = <<EOF
+  #!/bin/bash
+  apt-get update -y
+  apt-get install -y docker.io docker-compose openjdk-17-jdk
+  systemctl start docker
+  systemctl enable docker
+  usermod -aG docker ubuntu
+  EOF 
 
   tags = {
     Name = "log-pipeline-consumer"
